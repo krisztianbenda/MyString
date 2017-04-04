@@ -29,18 +29,17 @@ A feladatkiírás
 
 A fentiek alapján implementáld a MyString osztályt, és írj hozzá rövid tesztprogramot, amelyben minden függvényét legalább egyszer használod!
 
-Beadandó a több modulra osztott forráskód: mystring.cpp, mystring.h és test.cpp. A feltöltött ZIP-nek ezt a három fájlt kell tartalmaznia.
-A sztring legyen másolható és értékadható. Valósítsd meg a mozgató konstruktort és értékadást is! Ne használj STL-t, std::string-et sem! (A C-s sztringkezelő függvényeket lehet.)
-Valósítsd meg a következő műveleteket: létrehozás üresen, létrehozás karaktertömbből, két sztring összefűzése (+ és +=), sztring és karakter összefűzése (+ és +=), kiírás és beolvasás (<< és >>), hossz lekérdezése, indexelés.
-Az egyes függvények működése legyen kommentekkel magyarázva! Igaz, elvileg rossz kód egyik ismérve, ha túl sokat kell magyarázni, de ez most tanulós kód. Pl.
+ * Beadandó a több modulra osztott forráskód: mystring.cpp, mystring.h és test.cpp. A feltöltött ZIP-nek ezt a három fájlt kell tartalmaznia.
+ * A sztring legyen másolható és értékadható. Valósítsd meg a mozgató konstruktort és értékadást is! Ne használj STL-t, std::string-et sem! (A C-s sztringkezelő függvényeket lehet.)
+ * Valósítsd meg a következő műveleteket: létrehozás üresen, létrehozás karaktertömbből, két sztring összefűzése (+ és +=), sztring és karakter összefűzése (+ és +=), kiírás és beolvasás (<< és >>), hossz lekérdezése, indexelés.
+ * Az egyes függvények működése legyen kommentekkel magyarázva! Igaz, elvileg rossz kód egyik ismérve, ha túl sokat kell magyarázni, de ez most tanulós kód. Pl.
 /* az új sztring helye; +1 hely kell a lezáró nullának */
 char* buf = new char[len + 1];
 Illetve:
 /* csökkentjük a referenciaszámlálót.
- * ha nullára csökkent, az adat törölhető. */
+/* ha nullára csökkent, az adat törölhető. */
 if (-- *refcount == 0) {
     /* ... */
 }
-Írj mindent C++11-esen, amit csak lehet!
-A kötelező feladat eddig tart. Ha szeretnél még foglalkozni az osztállyal, akkor a következő szorgalmi feladatokat is megoldhatod.
+ * Írj mindent C++11-esen, amit csak lehet!
 
