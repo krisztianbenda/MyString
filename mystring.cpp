@@ -99,7 +99,20 @@ MyString::MyString(MyString&& other) noexcept :stringvalue{other.stringvalue}{
 }
 
 /* Operator[] a konnyebb kezelhetosegert*/
-const char & MyString::operator[](size_t idx) const noexcept{
+const char & MyString::operator[](const unsigned int idx) const noexcept{
+    return stringvalue->data_[idx];
+}
+
+// Ha modositanank a [] zarojelek segitsegevel, akkor uj sztringet kell letrehozni
+char& MyString::operator[](const unsigned int idx){
+    if (stringvalue->refcount > 1){
+        auto *newStr = new char[stringvalue->size_ + 1];
+        newStr[0] = '\0';
+        strcat(newStr, this->stringvalue->data_);
+        MyString tmp{newStr};
+        *this = tmp;
+        delete [] newStr;
+    }
     return stringvalue->data_[idx];
 }
 
@@ -167,20 +180,3 @@ std::ostream& operator<<(std::ostream& os, const MyString& mystring)
 size_t MyString::length() const noexcept{
     return stringvalue->size_;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

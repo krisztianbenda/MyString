@@ -47,7 +47,8 @@ public:
     
     ~MyString();
     
-    const char& operator[] (size_t) const noexcept;
+    const char& operator[] (const unsigned int) const noexcept;
+    char& operator[] (const unsigned int);
     
     MyString& operator=(const MyString&);
     

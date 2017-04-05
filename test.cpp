@@ -93,4 +93,12 @@ public:
         std::cout << mystring;
         std::cout << "\" with length: " << mystring.length() << std::endl;
     }
+    
+    void test6(){
+        std::cout << "Test 6..." << std::endl;
+        MyString a = "hello", b = a;
+        a[0] = 'X';
+        std::cout << " " << a << std::endl;
+        std::cout << " " << b << std::endl;
+    }
 };

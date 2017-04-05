@@ -15,5 +15,6 @@ int main(int argc, const char * argv[]) {
     Test::getInstance().test3();
     Test::getInstance().test4();
     Test::getInstance().test5();
+    Test::getInstance().test6();
     return 0;
 }
