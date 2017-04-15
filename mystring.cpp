@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <map>
 #include "mystring.h"
 
     
@@ -40,14 +41,37 @@ StringValue::StringValue(StringValue&& other) noexcept{
 
 /* MyString osztaly implementlasa*/
 
+ BinaryTree MyString::create_BinaryTree(){
+     BinaryTree binarytree;
+     return binarytree;
+}
+//unsigned int MyString::key_index = 0;
+BinaryTree MyString::database = MyString::create_BinaryTree();
+
 /* Letrehozas uresen*/
 MyString::MyString(){
-    stringvalue = new StringValue;
+    auto search = MyString::database.find("");
+    if(search != MyString::database.end()) {
+        search->second->refcount++;
+    }
+    else {
+        stringvalue = new StringValue;
+        MyString::database[""] = stringvalue;
+    }
+   
 }
 
 /* Letrehozas karaktertombbol*/
 MyString::MyString(const char *exp){
-    stringvalue = new StringValue{exp};
+    auto search = MyString::database.find(exp);
+    if(search != MyString::database.end()) {
+        search->second->refcount++;
+        stringvalue = search->second;
+    }
+    else {
+        stringvalue = new StringValue{exp};
+        MyString::database[exp] = stringvalue;
+    }
 }
 
 /* Destruktor*/
@@ -56,12 +80,19 @@ MyString::~MyString(){
      akkor toroljuk az objektumot (lefoglalt memoriateruletet).
      Egyebkent csak a szamlalot csokkentjuk.
      */
-    if (stringvalue != nullptr && --stringvalue->refcount == 0)
-        delete stringvalue;
+    if (stringvalue != nullptr && --stringvalue->refcount == 0){
+        auto it = MyString::database.find(stringvalue->data_);
+        if (it != MyString::database.end()){
+            delete stringvalue;
+            MyString::database.erase(it);
+        }
+    } else {
+        stringvalue = nullptr;
+    }
 }
 
 /* Copy konstruktor*/
-MyString::MyString(const MyString& other) noexcept :stringvalue(other.stringvalue) {
+MyString::MyString(const MyString& other) noexcept :stringvalue(other.stringvalue){
     /* Az uj objektum megkapja a masik ertekere mutato pointert,
         valamint a referenciaszamlalot noveljuk egyel
      */
@@ -74,8 +105,9 @@ MyString& MyString::operator=(const MyString& other){
         /* Ha a referenciak szama eleri a 0-t,
             akkor mar nincs szukseg a stringvalue-ra. Toroloni lehet.
          */
-        if (--stringvalue->refcount == 0)
+        if (--stringvalue->refcount == 0){
             delete stringvalue;
+        }
         stringvalue = other.stringvalue;
         stringvalue->refcount++;
     }
@@ -85,8 +117,7 @@ MyString& MyString::operator=(const MyString& other){
 /* Mozgato ertekadas*/
 MyString& MyString::operator=(MyString&& other){
     if (this != &other){
-        if (--stringvalue->refcount == 0)
-            delete stringvalue;
+        this->~MyString();
         stringvalue = std::move(other.stringvalue);
         other.stringvalue = nullptr;
     }
@@ -99,21 +130,14 @@ MyString::MyString(MyString&& other) noexcept :stringvalue{other.stringvalue}{
 }
 
 /* Operator[] a konnyebb kezelhetosegert*/
-const char & MyString::operator[](const unsigned int idx) const noexcept{
+const char & MyString::operator[](unsigned int idx) const noexcept{
     return stringvalue->data_[idx];
 }
 
 // Ha modositanank a [] zarojelek segitsegevel, akkor uj sztringet kell letrehozni
-char& MyString::operator[](const unsigned int idx){
-    if (stringvalue->refcount > 1){
-        auto *newStr = new char[stringvalue->size_ + 1];
-        newStr[0] = '\0';
-        strcat(newStr, this->stringvalue->data_);
-        MyString tmp{newStr};
-        *this = tmp;
-        delete [] newStr;
-    }
-    return stringvalue->data_[idx];
+Proxy& MyString::operator[](const unsigned int idx){
+    Proxy *proxy = new Proxy{*this, stringvalue->data_[idx], idx};
+    return *proxy;
 }
 
 /* Ket MyString osszeuzese eseten a referenciszamlalok nem valtoznak,
@@ -177,6 +201,46 @@ std::ostream& operator<<(std::ostream& os, const MyString& mystring)
 }
 
 /* Hossz lekerdezese*/
-size_t MyString::length() const noexcept{
+inline size_t MyString::length() const noexcept{
     return stringvalue->size_;
+}
+
+unsigned int MyString::how_many() const noexcept {
+    return stringvalue->refcount;
+}
+
+const char* MyString::get_data() const {
+    return stringvalue->data_;
+}
+
+
+Proxy::Proxy(MyString &string, char& c, unsigned int idx){
+    fromthis = &string;
+    idx_ = idx;
+}
+
+//Ertekdaskor szetvalasztjuk a modositando es a regebbi
+// (map-ben tarolt) sztringeket
+void Proxy::operator=(const char& rhs){
+    char* text = new char[fromthis->length()+1];
+    strcpy(text, fromthis->get_data());
+    text[idx_] = rhs;
+    *fromthis = text;
+    delete [] text;
+    delete this;
+}
+
+Proxy::operator const char() const {
+    return fromthis->get_data()[idx_];
+}
+
+Proxy::~Proxy(){
+    fromthis = nullptr;
+    idx_ = 0;
+}
+
+std::ostream& operator<<(std::ostream& os, Proxy& proxy){
+    os << char(proxy);
+    delete &proxy;
+    return os;
 }

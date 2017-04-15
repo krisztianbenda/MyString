@@ -10,6 +10,7 @@
 #define mystring_h
 
 #include <stdio.h>
+#include <map>
 
 /* Az osztaly hierarhia ket osztalybol all.
     A MyString osztaly tartalmazza a StringValue osztalyt.
@@ -31,10 +32,15 @@ public:
 
 };
 
+class Proxy;
+
+typedef std::map<std::string, StringValue*> BinaryTree;
 
 class MyString{
 private:
     StringValue *stringvalue;
+    static BinaryTree database;
+    static BinaryTree create_BinaryTree();
 public:
     
     MyString();
@@ -47,8 +53,8 @@ public:
     
     ~MyString();
     
-    const char& operator[] (const unsigned int) const noexcept;
-    char& operator[] (const unsigned int);
+    const char& operator[] (unsigned int) const noexcept;
+    Proxy& operator[] (unsigned int);
     
     MyString& operator=(const MyString&);
     
@@ -66,7 +72,28 @@ public:
     
     size_t length() const noexcept;
     
+    unsigned int how_many() const noexcept;
+    
+    const char * get_data() const;
 };
+
+class Proxy{
+private:
+    MyString* fromthis;
+    unsigned int idx_;
+//    gyakorlatilag nincs szukseg arra, hogy a konkret
+//    karaktert taroljuk. Eleg csak a mystring es egy index,
+//    arra, hogy hanyadik karaktert tariljuk.
+//    char* char_;
+public:
+    Proxy() = default;
+    Proxy(MyString &, char&, unsigned int);
+    void operator=(const char &);
+    explicit operator const char() const;
+    ~Proxy();
+};
+
+std::ostream& operator<<(std::ostream&,  Proxy&);
 
 std::istream& operator>> (std::istream&, MyString&);
 std::ostream& operator<<(std::ostream&, const MyString&);

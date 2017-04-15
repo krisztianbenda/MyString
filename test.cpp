@@ -101,4 +101,21 @@ public:
         std::cout << " " << a << std::endl;
         std::cout << " " << b << std::endl;
     }
+    
+    void test7(){
+        MyString a = "hello vilag";
+        MyString b = "hello vilag";
+        MyString c = b;
+        MyString d(c);
+        std::cout << "Test 7..." << std::endl;
+        std::cout << " There are " << a.how_many();
+        std::cout << " \"" << a <<"\" strings." << std::endl;
+    }
+    
+    void test8(){
+        std::cout << "Test 8..." << std::endl;
+        MyString a = "helló világ";
+        MyString b = a;
+        std::cout << " " << b[1] << std::endl;  /* e */
+    }
 };
